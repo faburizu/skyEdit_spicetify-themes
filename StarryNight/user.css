@@ -109,8 +109,9 @@
   overflow: visible;
   box-shadow: 0 0 5px 3px var(--spice-text);
 }
-/* Both current widgets nest the image below a size-constrained div. */
-[data-starrynight-layout="side"] [data-testid="cover-art-button"] :is(div, img),
+/* Enlarge image ancestors only. Spotify also nests a fallback-icon div here;
+   giving that inset placeholder 100% dimensions makes it escape the artwork. */
+[data-starrynight-layout="side"] [data-testid="cover-art-button"] :is(div:has(img), img),
 [data-starrynight-layout="side"] .main-nowPlayingWidget-coverArt .cover-art {
   width: 100% !important;
   height: 100% !important;
