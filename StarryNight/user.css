@@ -1,300 +1,157 @@
-.button-module__button___hf2qg_marketplace {
-  color: var(--spice-subtext);
-}
-
-.os-scrollbar {
-  --os-handle-border-radius: 16px !important;
-  --os-size: 8px !important;
-}
-
-.main-entityHeader-backgroundColor {
-  background-color: #00000000 !important;
-}
-
-.main-home-homeHeader {
-  background-color: #00000000 !important;
-  background-image: none !important;
-}
-
+/* Panel attributes are assigned by theme.js using Spotify's grid roles.
+   Avoid generated Spotify class names: these change between client builds. */
 .Root__top-container {
   background: linear-gradient(180deg, var(--spice-sidebar-alt) 0%, var(--spice-sidebar) 100%);
+  isolation: isolate;
   overflow: hidden;
-  grid-template-areas:
-    "left-sidebar    main-view         now-playing-bar"
-    "left-sidebar    main-view         right-sidebar";
-  grid-template-rows: auto auto 1fr;
 }
 
-.global-nav .Root__top-container {
+.Root__top-container > [data-starrynight-area],
+.Root__globalNav,
+#main-view,
+.Root__main-view,
+.main-view-container,
+.main-view-container__scroll-node-child,
+.main-view-container__mh-footer-container,
+[data-starrynight-area="left-sidebar"] > nav,
+[data-starrynight-area="left-sidebar"] > nav > div,
+.main-yourLibraryX-libraryContainer,
+.main-yourLibraryX-entryPoints,
+[data-starrynight-area="right-sidebar"] > div,
+[data-testid="NPV_Panel_OpenDiv"],
+.NowPlayingView,
+.main-nowPlayingView-contextItemInfo::before,
+.main-home-homeHeader,
+.main-entityHeader-backgroundColor,
+.main-entityHeader-overlay,
+.main-actionBarBackground-background,
+.playlist-playlist-actionBarBackground-background,
+.playlist-playlist-playlistContent,
+.lyrics-lyrics-background,
+.marketplace-header {
+  background: transparent !important;
+}
+
+.main-topBar-background { background-color: var(--spice-highlight) !important; }
+.main-entityHeader-background.main-entityHeader-gradient { opacity: .5; }
+.main-trackList-trackListRow:hover { background-color: var(--spice-highlight); }
+.main-playPauseButton-button,
+[data-testid="control-button-playpause"] { background-color: var(--spice-button); }
+.os-scrollbar { --os-handle-border-radius: 16px !important; --os-size: 8px !important; }
+
+/* Preserve native navigation and banners. Only opt into the side player when
+   all four panels are present and the sidebar has a usable width. */
+.Root__top-container[data-starrynight-layout="side"] {
   grid-template-areas:
-    "top-banner global-nav global-nav"
+    "top-banner top-banner top-banner"
+    "global-nav global-nav global-nav"
     "left-sidebar main-view now-playing-bar"
     "left-sidebar main-view right-sidebar" !important;
+  grid-template-rows: auto auto auto minmax(0, 1fr) !important;
 }
-
-.Root__globalNav {
-  background-color: #00000000 !important;
+.Root__top-container[data-starrynight-layout="side"] > [data-starrynight-area="main-view"] {
+  grid-area: main-view !important;
 }
-
-.ffFwfKcPDbmAPLXzxzKq:before {
-  background-color: #00000000 !important;
-}
-
-.I0bVSxvqA3rm5HvciMap {
-  --bgColor: #00000000 !important;
-}
-
-.I0bVSxvqA3rm5HvciMap::after {
-  --bgColor: #00000000 !important;
-}
-
-.PeLrpasyfBW8ql_bmoAi {
-  background-color: #00000000 !important;
-  background-image: none !important;
-}
-
-.PkOz5g82CaoKk1J3GX0e  {
-  background-color: #00000000 !important;
-  background-image: none !important;
-}
-
-.sv5suqIPUwjgUF_BzM41 {
-  transform: none !important;
-}
-
-.Root__right-sidebar {
-  width: min-content;
+.Root__top-container[data-starrynight-layout="side"] > [data-starrynight-area="right-sidebar"] {
+  min-height: 0 !important;
   height: auto !important;
-  min-height: 100% !important;
 }
-
-.Root__now-playing-bar {
-  width: var(--panel-width);
+.Root__top-container[data-starrynight-layout="side"] > [data-starrynight-area="now-playing-bar"] {
+  width: auto !important;
+  min-width: 0;
+  padding: 8px;
+  margin: 0;
+  /* Break the native player's intrinsic minimum from the sidebar column. */
+  contain: inline-size;
 }
-
-.main-topBar-background {
-  background-color: var(--spice-highlight) !important;
+[data-starrynight-layout="side"] .main-nowPlayingBar-container {
+  min-width: 0;
+  max-width: none;
+  width: 100%;
 }
-
-.Root__nav-bar {
-  background-color: #00000000 !important;
-}
-
-.main-yourLibraryX-libraryContainer {
-  background: none !important;
-}
-
-.main-trackList-trackListRow:hover {
-  background-color: var(--spice-highlight);
-}
-
-.main-playPauseButton-button {
-  background-color: var(--spice-button);
-}
-
-.rX_OmqCngvY5ZCoYBZgb {
-  background-color: #00000000 !important;
-}
-
-.main-yourLibraryX-entryPoints {
-  background-color: #00000000 !important;
-}
-
-.marketplace-header {
-  background-color: #00000000 !important;
-}
-
-.EmeHQXR87mUskYK6xEde {
-  background-color: #00000000 !important;
-}
-
-.lyrics-lyrics-background {
-  background-color: #00000000 !important;
-}
-
-.main-actionBarBackground-background {
-  background-image: none;
-  background-color: #00000000 !important;
-  animation: none !important;
-  -webkit-animation: none !important;
-}
-
-.main-entityHeader-overlay {
-  background: none !important;
-}
-
-.main-entityHeader-background.main-entityHeader-gradient {
-  opacity: 0.5;
-  animation: none !important;
-}
-
-.main-entityHeader-background.main-entityHeader-overlay:after {
-  background-image: none !important;
-  animation: none !important;
-  -webkit-animation: none !important;
-}
-
-.pUNc2aOeOQANHrhYa1GU .RDZ61ETnag1ilfZTkVxe {
-  color: #00000000 !important;
-}
-
-.playlist-playlist-playlistContent {
-  background: #00000000 !important;
-}
-
-.UrfDp0_mKGL9hkfh9g_R,
-.UrfDp0_mKGL9hkfh9g_R:before,
-.mzBZbIt7NDzzTffimVhn,
-.WBFaUw_oOfN2m4aTxggt,
-.main-nowPlayingView-contextItemInfo:before,
-.playlist-playlist-actionBarBackground-background,
-.main-entityHeader-backgroundColor,
-.Root__now-playing-bar {
-  background: none !important;
-}
-
-.sl_aPp6GDg05ItSfmsS7 {
-  display: none;
-}
-
-.main-nowPlayingBar-nowPlayingBar {
-  min-height: 400px;
-}
-
-.main-nowPlayingBar-container {
+[data-starrynight-layout="side"] .main-nowPlayingBar-nowPlayingBar {
   flex-direction: column;
-  min-width: 280px;
-  max-width: 420px;
+  gap: 16px;
+  height: auto;
+  min-height: 0;
+  padding: 8px 0;
 }
-
-.main-nowPlayingBar-nowPlayingBar {
-  flex-direction: column;
-}
-
-[data-right-sidebar-hidden] .Root__main-view {
-  grid-area: main-view/main-view/main-view/span 1;
-}
-
-.Root__main-view {
-  background-color: #00000000 !important;
-}
-
-.main-nowPlayingBar-center {
+[data-starrynight-layout="side"] :is(.main-nowPlayingBar-left, .main-nowPlayingBar-center, .main-nowPlayingBar-right) {
   width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding-inline: 0;
 }
-
-.main-nowPlayingBar-left {
-  width: 100%;
-}
-
-.HD9s7U5E1RLSWKpXmrqx {
-  background-color: #00000000;
-  margin: auto;
-  width: 100%;
-}
-
-.main-nowPlayingWidget-coverArt .cover-art {
-  height: 220px !important;
-  width: 220px !important;
-  margin: auto;
-  background-color: #00000000;
-  box-shadow: 0 0 0px var(--spice-rgb-shadow);
-}
-
-.main-nowPlayingWidget-coverArt .cover-art img {
-  border-radius: 50%;
-  animation: spin 25s linear infinite;
-  animation-play-state: paused;
-  background-color: #00000000;
-  box-shadow: 0 0 5px 5px var(--spice-text);
-}
-
-[data-testid="now-playing-bar"]:has(
-  [data-testid="control-button-playpause"][aria-label="Pause"]
-)
-  .main-nowPlayingWidget-coverArt
-  .cover-art
-  img {
-  animation-play-state: running !important;
-}
-
-.main-coverSlotCollapsed-container {
-  width: 100%;
-  height: 100%;
-}
-
-.main-coverSlotCollapsed-container> :first-child {
-  width: 100%;
-  height: 100%;
-}
-
-.main-coverSlotCollapsed-container> :first-child> :first-child {
-  width: 100%;
-  height: 100%;
-  background-color: #00000000;
-}
-
-.main-nowPlayingWidget-coverArt {
-  width: 100%;
-  height: 100%;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  background-color: #00000000;
-}
-
-.main-nowPlayingWidget-nowPlaying {
-  width: 100%;
-  flex-direction: row;
+[data-starrynight-layout="side"] :is([data-testid="now-playing-widget"], [data-testid="now-playing-widget-v2"]) {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-.main-coverSlotCollapsed-expandButton {
-  right: 25%;
-}
-
-.player-controls__buttons.player-controls__buttons--new-icons {
-  order: 2;
-}
-
-.playback-bar {
-  order: 1;
-}
-
-.main-nowPlayingBar-right {
+  gap: 8px;
   width: 100%;
 }
-
-.main-nowPlayingBar-extraControls {
-  justify-content: space-evenly;
+[data-starrynight-layout="side"] :is([data-testid="CoverSlotCollapsed__container"], [data-testid="cover-art-container"], .main-nowPlayingWidget-coverArt) {
+  flex: 0 0 100%;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 6px;
+  overflow: visible;
 }
-
-.main-tag-container {
-  color: var(--spice-sidebar);
+[data-starrynight-layout="side"] [data-testid="cover-art-button"] {
+  display: block;
+  width: var(--starrynight-art-size, 220px) !important;
+  height: var(--starrynight-art-size, 220px) !important;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  overflow: visible;
+  box-shadow: 0 0 5px 3px var(--spice-text);
+}
+/* Both current widgets nest the image below a size-constrained div. */
+[data-starrynight-layout="side"] [data-testid="cover-art-button"] :is(div, img),
+[data-starrynight-layout="side"] .main-nowPlayingWidget-coverArt .cover-art {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 50%;
+}
+[data-starrynight-layout="side"] [data-testid="cover-art-button"] img {
+  object-fit: cover;
+  animation: starrynight-spin 25s linear infinite;
+  animation-play-state: paused;
+}
+.Root__top-container[data-starrynight-playing="true"] [data-testid="cover-art-button"] img {
+  animation-play-state: running;
+}
+[data-starrynight-layout="side"] .player-controls__buttons { order: 2; margin: 0; }
+[data-starrynight-layout="side"] .playback-bar { order: 1; margin-bottom: 8px; width: 100%; }
+[data-starrynight-layout="side"] .main-nowPlayingBar-extraControls {
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  row-gap: 8px;
 }
 
 .starrynight-bg-container {
-  position: fixed;
-  z-index: 0;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   pointer-events: none;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  background-color: transparent;
+  overflow: hidden;
 }
-
-.ffFwfKcPDbmAPLXzxzKq {
-  background-color: #00000000 !important;
+.starrynight-star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--spice-star);
 }
-
-button[data-testid="cover-art-button"] {
-  height: 220px !important;
-  width: 220px !important;
-  margin: auto;
-  background-color: #00000000;
-  box-shadow: 0 0 0px var(--spice-rgb-shadow);
-  display: contents;
+@media (prefers-reduced-motion: reduce) {
+  .starrynight-bg-container *,
+  [data-starrynight-layout="side"] [data-testid="cover-art-button"] img {
+    animation: none !important;
+  }
+  .starrynight-bg-container .shootingstar { display: none; }
 }
 
 @keyframes twinkle1 {
@@ -303,15 +160,15 @@ button[data-testid="cover-art-button"] {
   }
 
   20% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   40% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   60% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   80% {
@@ -333,15 +190,15 @@ button[data-testid="cover-art-button"] {
   }
 
   40% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   60% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   80% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   100% {
@@ -351,7 +208,7 @@ button[data-testid="cover-art-button"] {
 
 @keyframes twinkle3 {
   0% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   20% {
@@ -367,21 +224,21 @@ button[data-testid="cover-art-button"] {
   }
 
   80% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   100% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 }
 
 @keyframes twinkle4 {
   0% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   20% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 
   40% {
@@ -397,11 +254,11 @@ button[data-testid="cover-art-button"] {
   }
 
   100% {
-    box-shadow: 0px 0px -8px 2px var(--spice-star-glow);
+    box-shadow: 0px 0px 0px 0px var(--spice-star-glow);
   }
 }
 
-@keyframes spin {
+@keyframes starrynight-spin {
   from {
     transform: rotate(0deg);
   }
@@ -420,18 +277,18 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-.shootingstar {
+.starrynight-bg-container .shootingstar {
   position: absolute;
   width: 4px;
   height: 4px;
   background: var(--spice-shooting-star);
   border-radius: 50%;
-  animation: animate 3s linear;
+  animation: starrynight-shooting-star 3s linear;
   left: initial;
-  z-index: -1;
+  z-index: 0;
 }
 
-.shootingstar::before {
+.starrynight-bg-container .shootingstar::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -441,7 +298,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   background: linear-gradient(90deg, var(--spice-shooting-star), transparent);
 }
 
-@keyframes animate {
+@keyframes starrynight-shooting-star {
   0% {
     transform: rotate(315deg) translateX(0);
     opacity: 1;

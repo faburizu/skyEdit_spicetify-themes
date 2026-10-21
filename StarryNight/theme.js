@@ -1,127 +1,171 @@
-function waitForElement(els, func, timeout = 100) {
-  const queries = els.map((el) => document.querySelector(el));
-  if (queries.every((a) => a)) {
-    func(queries);
-  } else if (timeout > 0) {
-    setTimeout(waitForElement, 300, els, func, --timeout);
+(() => {
+  // Marketplace can evaluate theme.js more than once without reloading Spotify.
+  window.StarryNight?.destroy?.();
+
+  const areaAttribute = 'data-starrynight-area';
+  const areas = ['left-sidebar', 'main-view', 'right-sidebar', 'now-playing-bar'];
+  const marked = new Set();
+  let root, background, observedSidebar, player;
+  let frame = 0;
+  let destroyed = false;
+  const random = (min, max) => Math.random() * (max - min) + min;
+
+  function schedule() {
+    if (!destroyed && !frame) frame = requestAnimationFrame(sync);
   }
-}
 
-function random(min, max) {
-  // min inclusive max exclusive
-  return Math.random() * (max - min) + min;
-}
+  function createBackground() {
+    background = document.createElement('div');
+    background.className = 'starrynight-bg-container';
+    background.setAttribute('aria-hidden', 'true');
+    const fragment = document.createDocumentFragment();
+    const count = Math.min(600, Math.ceil(root.clientWidth * root.clientHeight / 4000));
+    for (let i = 0; i < count; i++) {
+      const star = document.createElement('div');
+      star.className = 'starrynight-star';
+      const size = Math.random() < .5 ? 1 : 2;
+      Object.assign(star.style, {
+        left: `${random(0, 99)}%`, top: `${random(0, 99)}%`,
+        opacity: random(.5, 1), width: `${size}px`, height: `${size}px`,
+      });
+      if (Math.random() < .2) {
+        star.style.animation = `twinkle${Math.floor(random(1, 5))} 5s infinite`;
+      }
+      fragment.appendChild(star);
+    }
+    // Shooting-star animation and license are preserved in user.css.
+    for (let i = 0; i < 4; i++) {
+      const star = document.createElement('span');
+      star.className = 'shootingstar';
+      Object.assign(star.style, {
+        top: '-4px', right: `${random(0, 90)}%`,
+        animationDuration: `${random(3, 7)}s`,
+        animationDelay: `${random(0, 7)}s`,
+        animationIterationCount: 'infinite',
+        boxShadow: '0 0 0 4px rgba(var(--spice-rgb-shooting-star-glow), .1), 0 0 0 8px rgba(var(--spice-rgb-shooting-star-glow), .1), 0 0 20px rgba(var(--spice-rgb-shooting-star-glow), .1)',
+      });
+      fragment.appendChild(star);
+    }
+    background.appendChild(fragment);
+    root.appendChild(background);
+  }
 
-waitForElement(['.Root__top-container'], ([topContainer]) => {
-  const r = document.documentElement;
-  const rs = window.getComputedStyle(r);
+  function updatePlayback() {
+    if (!root) return;
+    // Spicetify's player state works independently of the client's UI language.
+    let playing = false;
+    try { playing = player?.isPlaying?.() === true; } catch { /* Player not ready. */ }
+    const value = String(playing);
+    if (root.getAttribute('data-starrynight-playing') !== value) {
+      root.setAttribute('data-starrynight-playing', value);
+    }
+  }
 
-  const backgroundContainer = document.createElement('div');
-  backgroundContainer.className = 'starrynight-bg-container';
-  topContainer.appendChild(backgroundContainer);
+  function detachPlayer() {
+    player?.removeEventListener?.('onplaypause', updatePlayback);
+    player?.removeEventListener?.('songchange', updatePlayback);
+    player = undefined;
+  }
 
-  // to position stars and shooting stars between the background and everything else
-  const rootElement = document.querySelector('.Root__top-container');
-  rootElement.style.zIndex = '0';
+  function sync() {
+    frame = 0;
+    const nextRoot = document.querySelector('.Root__top-container');
+    if (nextRoot !== root) {
+      resizeObserver.disconnect();
+      background?.remove();
+      root?.removeAttribute('data-starrynight-layout');
+      root?.removeAttribute('data-starrynight-playing');
+      root?.style.removeProperty('--starrynight-art-size');
+      root = nextRoot;
+      observedSidebar = undefined;
+      if (root) {
+        createBackground();
+        resizeObserver.observe(root);
+      }
+    }
+    if (!root) return;
+    if (!background?.isConnected) createBackground();
 
-  // create the stars
-  const canvasSize =
-    backgroundContainer.clientWidth * backgroundContainer.clientHeight;
-  const starsFraction = canvasSize / 4000;
-  for (let i = 0; i < starsFraction; i++) {
-    const size = Math.random() < 0.5 ? 1 : 2;
-
-    const star = document.createElement('div');
-    star.style.position = 'absolute';
-    star.style.left = `${random(0, 99)}%`;
-    star.style.top = `${random(0, 99)}%`;
-    star.style.opacity = random(0.5, 1);
-    star.style.width = `${size}px`;
-    star.style.height = `${size}px`;
-    star.style.backgroundColor = rs.getPropertyValue('--spice-star');
-    star.style.zIndex = '-1';
-    star.style.borderRadius = '50%';
-
-    if (Math.random() < 1 / 5) {
-      star.style.setProperty("animation", `twinkle${Math.floor(Math.random() * 4) + 1} 5s infinite`, "important");
+    const panels = {};
+    for (const child of root.children) {
+      // Grid-area names survive minification. Legacy classes and #main-view
+      // are retained as fallbacks, without depending on generated class hashes.
+      const gridAreas = getComputedStyle(child).gridArea.split('/').map(value => value.trim());
+      const candidates = [
+        child.getAttribute(areaAttribute),
+        child.id,
+        gridAreas.every(value => value === gridAreas[0]) ? gridAreas[0] : '',
+        child.classList.contains('Root__nav-bar') ? 'left-sidebar' : '',
+        ...areas.filter(area => child.classList.contains(`Root__${area}`)),
+      ];
+      const area = candidates.find(value => areas.includes(value));
+      if (!area) continue;
+      if (child.getAttribute(areaAttribute) !== area) child.setAttribute(areaAttribute, area);
+      marked.add(child);
+      panels[area] = child;
+    }
+    for (const node of marked) {
+      if (!root.contains(node)) { node.removeAttribute(areaAttribute); marked.delete(node); }
     }
 
-    backgroundContainer.appendChild(star);
+    const sidebar = panels['right-sidebar'];
+    if (sidebar !== observedSidebar) {
+      if (observedSidebar) resizeObserver.unobserve(observedSidebar);
+      observedSidebar = sidebar;
+      if (sidebar) resizeObserver.observe(sidebar);
+    }
+    const sidebarWidth = sidebar?.getBoundingClientRect().width ?? 0;
+    const hidden = sidebar?.hidden || sidebar?.getAttribute('aria-hidden') === 'true'
+      || root.closest('[data-right-sidebar-hidden="true"]');
+    const side = areas.every(area => panels[area]) && !hidden
+      && sidebarWidth >= 250 && root.clientWidth >= 1000 && root.clientHeight >= 680;
+    const layout = side ? 'side' : 'bottom';
+    if (root.getAttribute('data-starrynight-layout') !== layout) {
+      root.setAttribute('data-starrynight-layout', layout);
+    }
+    const artSize = `${Math.round(Math.min(220, Math.max(140, sidebarWidth - 48)))}px`;
+    if (root.style.getPropertyValue('--starrynight-art-size') !== artSize) {
+      root.style.setProperty('--starrynight-art-size', artSize);
+    }
+
+    const nextPlayer = window.Spicetify?.Player;
+    if (nextPlayer?.addEventListener && nextPlayer !== player) {
+      detachPlayer();
+      player = nextPlayer;
+      player.addEventListener('onplaypause', updatePlayback);
+      player.addEventListener('songchange', updatePlayback);
+    }
+    updatePlayback();
   }
 
-  // handles resizing of playbar panel to match right sidebar below it
-  const playbar = document.querySelector('.Root__now-playing-bar');
-  waitForElement(['.Root__right-sidebar'], ([rightbar]) => {
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target === rightbar) {
-          let newWidth = entry.contentRect.width;
-          if (newWidth === 0) {
-            const localStorageWidth = localStorage.getItem(
-              '223ni6f2epqcidhx5etjafeai:panel-width-saved'
-            );
-            if (localStorageWidth) {
-              newWidth = localStorageWidth;
-            } else {
-              newWidth = 420;
-            }
-          }
-          playbar.style.width = `${newWidth}px`;
-          break;
-        }
-      }
-    });
-
-    resizeObserver.observe(rightbar);
+  const resizeObserver = new ResizeObserver(schedule);
+  const observer = new MutationObserver(records => {
+    if (records.some(record => !background?.contains(record.target))) schedule();
   });
-
-  /*
-  Pure CSS Shooting Star Animation Effect Copyright (c) 2021 by Delroy Prithvi (https://codepen.io/delroyprithvi/pen/LYyJROR)
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  */
-  for (let i = 0; i < 4; i++) {
-    const shootingstar = document.createElement('span');
-    shootingstar.className = 'shootingstar';
-    if (Math.random() < 0.75) {
-      shootingstar.style.top = '-4px'; // hidden off screen when animation is delayed
-      shootingstar.style.right = `${random(0, 90)}%`;
-    } else {
-      shootingstar.style.top = `${random(0, 50)}%`;
-      shootingstar.style.right = '-4px'; // hidden when animation is delayed
-    }
-
-    const shootingStarGlowColor = `rgba(${rs.getPropertyValue(
-      '--spice-rgb-shooting-star-glow'
-    )},${0.1})`;
-    shootingstar.style.boxShadow = `0 0 0 4px ${shootingStarGlowColor}, 0 0 0 8px ${shootingStarGlowColor}, 0 0 20px ${shootingStarGlowColor}`;
-
-    shootingstar.style.animationDuration = `${
-      Math.floor(Math.random() * 3) + 3
-    }s`;
-    shootingstar.style.animationDelay = `${Math.floor(Math.random() * 7)}s`;
-
-    backgroundContainer.appendChild(shootingstar);
-
-    shootingstar.addEventListener('animationend', () => {
-      if (Math.random() < 0.75) {
-        shootingstar.style.top = '-4px'; // hidden off screen when animation is delayed
-        shootingstar.style.right = `${random(0, 90)}%`;
-      } else {
-        shootingstar.style.top = `${random(0, 50)}%`;
-        shootingstar.style.right = '-4px'; // hidden when animation is delayed
-      }
-
-      shootingstar.style.animation = 'none'; // Remove animation
-
-      void shootingstar.offsetWidth;
-
-      shootingstar.style.animation = '';
-      shootingstar.style.setProperty("animation-duration", `${Math.floor(Math.random() * 4) + 3}s`, "important");
-    });
-  }
-});
+  observer.observe(document.documentElement, {
+    childList: true, subtree: true, attributes: true,
+    attributeFilter: ['class', 'style', 'hidden', 'aria-hidden', 'data-right-sidebar-hidden'],
+  });
+  const readinessTimer = setInterval(() => {
+    if (window.Spicetify?.Player !== player || !player) schedule();
+  }, 1000);
+  window.addEventListener('resize', schedule);
+  window.StarryNight = {
+    destroy() {
+      destroyed = true;
+      cancelAnimationFrame(frame);
+      clearInterval(readinessTimer);
+      observer.disconnect();
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', schedule);
+      detachPlayer();
+      background?.remove();
+      for (const node of marked) node.removeAttribute(areaAttribute);
+      marked.clear();
+      root?.removeAttribute('data-starrynight-layout');
+      root?.removeAttribute('data-starrynight-playing');
+      root?.style.removeProperty('--starrynight-art-size');
+    },
+  };
+  schedule();
+})();

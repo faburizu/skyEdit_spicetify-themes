@@ -1,5 +1,59 @@
 # StarryNight
 
+## Current-client compatibility
+
+The theme now supports the panel structure and both now-playing widgets found
+in Spotify **1.3.5.3058.g5d40d5480152** with Spicetify **2.46.2**.
+These versions were inspected locally. Automated browser checks use their
+extracted CSS with reconstructed markup; live-client visual verification is
+still required. Spotify experiments can produce different markup.
+
+- Identifies root panels by their CSS grid roles, with legacy class fallbacks,
+  instead of hard-coded generated class names.
+- Restores the transparent panels and circular 220px artwork in the side player.
+- Uses Spicetify playback events for rotation, independent of the UI language.
+- Shares the native sidebar's grid column, without a user-specific storage key
+  or an independently forced player width.
+- Uses the native bottom player when the sidebar is closed, narrower than 250px,
+  or the window is smaller than 1000px wide or 680px tall.
+- Handles delayed panel mounting, React root replacement, repeated injection,
+  and reduced-motion preferences.
+
+Spotify's current top search/navigation bar is retained. The screenshots below
+show an older client; this update does not recreate its removed navigation UI.
+
+### Install manually
+
+Copy `user.css`, `theme.js`, and `color.ini` into a folder named `StarryNight`
+under your Spicetify `Themes` directory (on Windows:
+`%APPDATA%\spicetify\Themes\StarryNight`). If using a Marketplace-installed
+theme, remove that theme in Marketplace first to avoid its CSS/JavaScript being
+injected alongside this manual installation. Then run:
+
+```powershell
+spicetify config current_theme StarryNight color_scheme Base inject_css 1 replace_colors 1 inject_theme_js 1
+spicetify apply
+```
+
+Open Now Playing or Queue to enable the side player. Drag Spotify's right-panel
+divider to resize it. Expand Your Library using Spotify's controls if you want
+playlist names visible instead of the collapsed icon strip.
+
+### Validation
+
+`tests/compatibility.cjs` needs Node.js, Playwright, and a browser. Set
+`SPOTIFY_XPUI` to an extracted, Spicetify-processed Spotify `Apps/xpui` directory,
+then run `node StarryNight/tests/compatibility.cjs` from the repository root.
+Set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome instead of Playwright's
+bundled Chromium. The fixture does not execute Spotify code or use an account.
+
+Checks cover artwork geometry for both widgets, panel alignment, transparency,
+play/pause events, sidebar resizing/closure, narrow/short windows, root and player
+replacement, reinjection cleanup, lazy stylesheet loading, and reduced motion.
+For a live check, also exercise Home, a playlist, Queue, Now Playing, track
+changes, and the sidebar divider. Cinema/fullscreen/video layouts have not been
+verified by the fixture.
+
 ## Screenshots
 
 ### Base
