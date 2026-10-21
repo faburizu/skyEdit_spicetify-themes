@@ -18,7 +18,7 @@ const art = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w
 function widget(version) {
   return `<div data-testid="now-playing-widget${version === 2 ? '-v2' : ''}" class="${version === 2 ? 'AukMNaKTJmhKlzn1fQYw' : 'main-nowPlayingWidget-nowPlaying'}">
     <div data-testid="${version === 2 ? 'cover-art-container' : 'CoverSlotCollapsed__container'}" class="${version === 2 ? 'JTX4m0MfV5NaIrbLWFIg' : 'hx8RwqDIY4ZzmBQcomN5 QjXBPUJOGqRvUKoKLwBv'}">
-      <div><button data-testid="cover-art-button" class="gl_npVIQm1UkxGs7QL5c"><div style="width:56px;height:56px"><img width="56" height="56" src="${art}"></div></button></div>
+      <div><button data-testid="cover-art-button" class="gl_npVIQm1UkxGs7QL5c"><div><div class="WHhQ96NalYH19nEolaqd" style="width:56px;height:56px"><div class="nGIoPje5STZ2ud7TsVH0"><svg viewBox="0 0 24 24"><path d="M10 2v14a4 4 0 1 0 2 3V7h8V2Z"/></svg></div><img class="P11Obdzt7UzROxKiPexD" data-testid="cover-art-image" width="56" height="56" src="${art}"></div></div></button></div>
     </div><div><b>Compatibility fixture</b><br>StarryNight</div><button aria-label="Save">✓</button>
   </div>`;
 }
@@ -66,6 +66,12 @@ function fixture(version = 2) {
     assert.equal(Math.round((await image.boundingBox()).width), 220);
     assert.equal(await image.evaluate(e => getComputedStyle(e).borderRadius), '50%');
     assert.equal(await image.evaluate(e => getComputedStyle(e).animationPlayState), 'running');
+    const artBox = await box('[data-testid="cover-art-button"]');
+    const placeholderBox = await box('[data-testid="cover-art-button"] .nGIoPje5STZ2ud7TsVH0');
+    assert.ok(placeholderBox.x >= artBox.x && placeholderBox.y >= artBox.y);
+    assert.ok(placeholderBox.x + placeholderBox.width <= artBox.x + artBox.width,
+      'Fallback icon must stay inside artwork, not be enlarged by image sizing rules');
+    assert.ok(placeholderBox.y + placeholderBox.height <= artBox.y + artBox.height);
     const playerBox = await box('[data-starrynight-area="now-playing-bar"]');
     const rightBox = await box('[data-starrynight-area="right-sidebar"]');
     assert.equal(Math.round(playerBox.width), Math.round(rightBox.width));
