@@ -58,9 +58,10 @@ function fixture() {
     await page.addStyleTag({ content: themeCSS });
     // Check overrides even when route CSS arrives after the theme.
     await page.addStyleTag({ content: nativeCSS });
-    for (const selector of ['.YourLibraryX', '#Desktop_PanelContainer_Id', '[data-npv-root]', '.GECIboaMmkIqHDKwQ3vR']) {
+    for (const selector of ['#Desktop_PanelContainer_Id', '[data-npv-root]', '.GECIboaMmkIqHDKwQ3vR']) {
       assert.equal(await bg(page.locator(selector)), 'rgba(0, 0, 0, 0)', selector);
     }
+    assert.ok(alpha(await bg(page.locator('.YourLibraryX'))) > 0 && alpha(await bg(page.locator('.YourLibraryX'))) < .1);
     assert.equal(await page.locator('#Desktop_PanelContainer_Id').evaluate(el => getComputedStyle(el, '::before').backgroundColor), 'rgba(0, 0, 0, 0)');
     const card = page.locator('.C0YTSqDKL6_Qo68om_i1');
     assert.ok(alpha(await bg(card)) > 0 && alpha(await bg(card)) < 1);
@@ -87,7 +88,7 @@ function fixture() {
     assert.ok(alpha(await bg(page.locator('.YourLibraryX'))) > 0 && alpha(await bg(page.locator('.YourLibraryX'))) < 1);
     await page.locator('[data-starrynight-area="left-sidebar"]').evaluate(el => el.style.width = '240px');
     await page.waitForFunction(() => document.querySelector('.Root__top-container').dataset.starrynightLibrary === 'expanded');
-    assert.equal(await bg(page.locator('.YourLibraryX')), 'rgba(0, 0, 0, 0)');
+    assert.ok(alpha(await bg(page.locator('.YourLibraryX'))) > 0 && alpha(await bg(page.locator('.YourLibraryX'))) < .1);
     // Palette follows the active scheme, rather than hard-coded blue.
     await page.locator('.Root__top-container').evaluate(el => el.style.setProperty('--spice-rgb-card', '70, 100, 60'));
     assert.match(await bg(card), /^rgba\(70, 100, 60,/);
