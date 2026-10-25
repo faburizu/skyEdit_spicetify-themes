@@ -5,7 +5,7 @@
   const areaAttribute = 'data-starrynight-area';
   const areas = ['left-sidebar', 'main-view', 'right-sidebar', 'now-playing-bar'];
   const marked = new Set();
-  let root, background, observedSidebar, player;
+  let root, background, observedSidebar, observedLibrary, player;
   let frame = 0;
   let destroyed = false;
   const random = (min, max) => Math.random() * (max - min) + min;
@@ -75,9 +75,11 @@
       background?.remove();
       root?.removeAttribute('data-starrynight-layout');
       root?.removeAttribute('data-starrynight-playing');
+      root?.removeAttribute('data-starrynight-library');
       root?.style.removeProperty('--starrynight-art-size');
       root = nextRoot;
       observedSidebar = undefined;
+      observedLibrary = undefined;
       if (root) {
         createBackground();
         resizeObserver.observe(root);
@@ -106,6 +108,18 @@
     }
     for (const node of marked) {
       if (!root.contains(node)) { node.removeAttribute(areaAttribute); marked.delete(node); }
+    }
+
+    const library = panels['left-sidebar'];
+    if (library !== observedLibrary) {
+      if (observedLibrary) resizeObserver.unobserve(observedLibrary);
+      observedLibrary = library;
+      if (library) resizeObserver.observe(library);
+    }
+    const libraryState = library && library.getBoundingClientRect().width < 120
+      ? 'collapsed' : 'expanded';
+    if (root.getAttribute('data-starrynight-library') !== libraryState) {
+      root.setAttribute('data-starrynight-library', libraryState);
     }
 
     const sidebar = panels['right-sidebar'];
@@ -164,6 +178,7 @@
       marked.clear();
       root?.removeAttribute('data-starrynight-layout');
       root?.removeAttribute('data-starrynight-playing');
+      root?.removeAttribute('data-starrynight-library');
       root?.style.removeProperty('--starrynight-art-size');
     },
   };

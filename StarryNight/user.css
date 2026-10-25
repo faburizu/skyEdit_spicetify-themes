@@ -1,6 +1,8 @@
 /* Panel attributes are assigned by theme.js using Spotify's grid roles.
    Avoid generated Spotify class names: these change between client builds. */
 .Root__top-container {
+  --starrynight-header-opacity: .32;
+  --starrynight-library-tint: .28;
   background: linear-gradient(180deg, var(--spice-sidebar-alt) 0%, var(--spice-sidebar) 100%);
   isolation: isolate;
   overflow: hidden;
@@ -17,7 +19,11 @@
 [data-starrynight-area="left-sidebar"] > nav > div,
 .main-yourLibraryX-libraryContainer,
 .main-yourLibraryX-entryPoints,
+.YourLibraryX,
 [data-starrynight-area="right-sidebar"] > div,
+#Desktop_PanelContainer_Id,
+#Desktop_PanelContainer_Id::before,
+[data-npv-root],
 [data-testid="NPV_Panel_OpenDiv"],
 .NowPlayingView,
 .main-nowPlayingView-contextItemInfo::before,
@@ -32,8 +38,76 @@
   background: transparent !important;
 }
 
-.main-topBar-background { background-color: var(--spice-highlight) !important; }
-.main-entityHeader-background.main-entityHeader-gradient { opacity: .5; }
+/* Keep the narrow library rail distinct; the expanded list shows the sky. */
+[data-starrynight-library="collapsed"] [data-starrynight-area="left-sidebar"] .YourLibraryX {
+  background: rgba(var(--spice-rgb-sidebar), var(--starrynight-library-tint)) !important;
+}
+
+.main-topBar-background {
+  background-color: rgba(var(--spice-rgb-sidebar), .88) !important;
+}
+
+/* Current artist route content wrappers (Spotify 1.3.6), plus the structural
+   contentSpacing fallback. Scope these to the page so dialogs keep their fill. */
+#main-view [data-testid="artist-page"] :is(
+  .u9i__FHAyXJecXMPsrLQ, .GECIboaMmkIqHDKwQ3vR,
+  .z0ow24AABLbFsQt7mYDF, .ErNDIeqOIhQ9kGfrxqS_
+),
+#main-view [data-testid="artist-page"] div:has(> .contentSpacing) {
+  background: transparent !important;
+}
+
+/* Current dynamic-color header and action-bar layers. Leave foreground text,
+   cover images, and artist photography opaque; fade only the background tint. */
+#main-view .hbNOZbHD3bPL3OcHQWNn {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--background-base-min-contrast, var(--background-base)) 65%, var(--spice-sidebar)) 0%,
+    color-mix(in srgb, var(--background-base) 44%, transparent) 100%) !important;
+  opacity: var(--starrynight-header-opacity);
+}
+#main-view :is(.r8bczAWCEgb9_L0iyIcc, .IfBZ5VdI_2nwDMl4H6Yh) {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--background-base) 14%, transparent),
+    transparent 100%) !important;
+}
+/* Legacy headers use two independent color/scrim layers. */
+#main-view .main-entityHeader-background.main-entityHeader-gradient,
+#main-view [data-testid="entity-header"] > .uP1rcUSIWCFaOZaoH0ZG {
+  opacity: var(--starrynight-header-opacity);
+}
+
+/* Discography album summary and sticky sort bar have no semantic class in the
+   current client. Keep their version-specific overrides together and scoped. */
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 {
+  background: rgba(var(--spice-rgb-card), .45) !important;
+  border: 1px solid rgba(var(--spice-rgb-text), .09);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  gap: 20px;
+  align-items: flex-start;
+}
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 > div {
+  min-width: 0;
+}
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 .RFNfyncEmBJ2m1xNT4gt {
+  margin-inline-start: 0;
+}
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1:hover,
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1:focus-within {
+  background: rgba(var(--spice-rgb-card), .62) !important;
+}
+#main-view [data-testid="artist-page"] .SdObJk3_bmCg1nV_PTUU.tnEtMe827oywEa8TgLqg {
+  background: rgba(var(--spice-rgb-sidebar), .9) !important;
+  box-shadow: 0 1px 0 rgba(var(--spice-rgb-text), .08);
+}
+@media (max-width: 1100px) {
+  #main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 {
+    padding: 16px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
 .main-trackList-trackListRow:hover { background-color: var(--spice-highlight); }
 .main-playPauseButton-button,
 [data-testid="control-button-playpause"] { background-color: var(--spice-button); }
