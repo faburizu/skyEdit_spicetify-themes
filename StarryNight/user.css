@@ -1,6 +1,9 @@
 /* Panel attributes are assigned by theme.js using Spotify's grid roles.
    Avoid generated Spotify class names: these change between client builds. */
 .Root__top-container {
+  --starrynight-header-opacity: .32;
+  --starrynight-library-tint: .06;
+  --starrynight-surface: rgba(var(--spice-rgb-text), .055);
   background: linear-gradient(180deg, var(--spice-sidebar-alt) 0%, var(--spice-sidebar) 100%);
   isolation: isolate;
   overflow: hidden;
@@ -17,7 +20,11 @@
 [data-starrynight-area="left-sidebar"] > nav > div,
 .main-yourLibraryX-libraryContainer,
 .main-yourLibraryX-entryPoints,
+.YourLibraryX,
 [data-starrynight-area="right-sidebar"] > div,
+#Desktop_PanelContainer_Id,
+#Desktop_PanelContainer_Id::before,
+[data-npv-root],
 [data-testid="NPV_Panel_OpenDiv"],
 .NowPlayingView,
 .main-nowPlayingView-contextItemInfo::before,
@@ -32,8 +39,142 @@
   background: transparent !important;
 }
 
-.main-topBar-background { background-color: var(--spice-highlight) !important; }
-.main-entityHeader-background.main-entityHeader-gradient { opacity: .5; }
+/* One continuous surface behind both the fixed controls and scrolling icons. */
+[data-starrynight-area="left-sidebar"] .YourLibraryX {
+  background: rgba(var(--spice-rgb-text), var(--starrynight-library-tint)) !important;
+  border-radius: 10px;
+}
+[data-starrynight-area="left-sidebar"] .ArpdzWdgRW_8lwpikPGW,
+[data-starrynight-area="left-sidebar"] .Yqfut8Aw1vohHPWNRsWy.iOha2eIx0YJ4dyeIOyTi {
+  box-shadow: none !important;
+}
+
+/* Blur content passing underneath the native title fade. Mask the background
+   only, so text and buttons retain their normal opacity and hit targets. */
+.main-topBar-background {
+  background: linear-gradient(180deg,
+    rgba(var(--spice-rgb-card), .88), rgba(var(--spice-rgb-card), .72)) !important;
+  backdrop-filter: blur(12px);
+  mask-image: linear-gradient(#000 0% 65%, transparent 100%);
+  box-shadow: none !important;
+}
+.main-topBar-background > .main-topBar-overlay,
+.main-topBar-background::after {
+  background: none !important;
+}
+/* These additional native backdrop/shadow layers otherwise end in hard black
+   rectangles, including on Home and beneath sidebar headers. */
+.Root__top-container .TEBHz9L27CyLntC68xQ2 > :is(.QwcIb5mGvbu4qb3_cnAQ, .ZDb8FjylyS1RZnYv3ubr) {
+  background: transparent !important;
+}
+#Desktop_PanelContainer_Id .KUVZt1zexrM6Da3wfIu4 {
+  box-shadow: 0 4px 12px -10px rgba(var(--spice-rgb-shadow), .22);
+}
+
+/* Current artist route content wrappers (Spotify 1.3.6), plus the structural
+   contentSpacing fallback. Scope these to the page so dialogs keep their fill. */
+#main-view [data-testid="artist-page"] :is(
+  .u9i__FHAyXJecXMPsrLQ, .GECIboaMmkIqHDKwQ3vR,
+  .z0ow24AABLbFsQt7mYDF, .ErNDIeqOIhQ9kGfrxqS_
+),
+#main-view [data-testid="artist-page"] div:has(> .contentSpacing) {
+  background: transparent !important;
+}
+
+/* Current dynamic-color header and action-bar layers. Leave foreground text,
+   cover images, and artist photography opaque; fade only the background tint. */
+.Root__top-container .hbNOZbHD3bPL3OcHQWNn {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--background-base-min-contrast, var(--background-base)) 65%, var(--spice-sidebar)) 0%,
+    color-mix(in srgb, var(--background-base) 44%, transparent) 100%) !important;
+  opacity: var(--starrynight-header-opacity);
+}
+.Root__top-container .r8bczAWCEgb9_L0iyIcc {
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--background-base) 14%, transparent),
+    transparent 100%) !important;
+}
+/* Legacy profile/Home/action backgrounds get their color through inline
+   background-color, not a CSS variable. Fade that existing layer with a mask. */
+.Root__top-container .IfBZ5VdI_2nwDMl4H6Yh {
+  background-image: none !important;
+  opacity: .16;
+  mask-image: linear-gradient(#000, transparent);
+}
+#main-view .main-entityHeader-background.main-entityHeader-gradient,
+.Root__top-container .uP1rcUSIWCFaOZaoH0ZG {
+  opacity: var(--starrynight-header-opacity);
+  mask-image: linear-gradient(#000, transparent);
+}
+.Root__top-container .uP1rcUSIWCFaOZaoH0ZG.nfBy1HoO33kgPOyEc3WZ {
+  background: transparent !important;
+}
+/* Artist photography and its scroll scrim are portaled outside the entity
+   header. The native overscroll fill can cover the entire page with solid red. */
+.Root__top-container [data-testid="overscroll-background"] {
+  background: transparent !important;
+}
+.Root__top-container :is(.MlWLm9_5qALi6Ay0_OCr, .FNyVAJwiyJvKSs7fgcmI) {
+  mask-image: linear-gradient(#000 0% 60%, transparent 100%);
+}
+.Root__top-container :is(.venMPE3QitySGonlITLf, .AE3dcjFNJ9068_vrnLB6)::after {
+  background: linear-gradient(180deg,
+    rgba(var(--spice-rgb-sidebar), .3), transparent) !important;
+}
+
+/* Prompted Playlists, podcast lists, and episode pages use separate wrappers. */
+#main-view :is(.CU6UW9KzAHCdO5xqbBbf, .fmJtSKRbaIwuGI4eOWBt, .nR22DzSVzUhvJkSqPFXx) {
+  background: transparent !important;
+}
+
+/* Home's large podcast/audiobook tiles: keep the covers intact and replace
+   their solid extracted-color backing with the shared translucent surface. */
+#main-view .iz0YLr43jlOJoSEPGWrX {
+  --background-color: rgba(var(--spice-rgb-card), .4) !important;
+  --background-base-high-contrast: rgba(var(--spice-rgb-card), .4) !important;
+  --text-base: var(--spice-text) !important;
+  --text-subdued: var(--spice-subtext) !important;
+  --higher-contrast-text-base-color: var(--spice-subtext) !important;
+  background: var(--starrynight-surface) !important;
+  border: 1px solid rgba(var(--spice-rgb-text), .08);
+}
+#main-view .iz0YLr43jlOJoSEPGWrX .abaOKiBFYzK4MTa3XHD9 {
+  background: linear-gradient(180deg,
+    rgba(var(--spice-rgb-card), .12), rgba(var(--spice-rgb-card), .4)) !important;
+}
+
+/* Discography album summary and sticky sort bar have no semantic class in the
+   current client. Keep their version-specific overrides together and scoped. */
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 {
+  background: rgba(var(--spice-rgb-card), .45) !important;
+  border: 1px solid rgba(var(--spice-rgb-text), .09);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+  gap: 20px;
+  align-items: flex-start;
+}
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 > div {
+  min-width: 0;
+}
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 .RFNfyncEmBJ2m1xNT4gt {
+  margin-inline-start: 0;
+}
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1:hover,
+#main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1:focus-within {
+  background: rgba(var(--spice-rgb-card), .62) !important;
+}
+#main-view [data-testid="artist-page"] .SdObJk3_bmCg1nV_PTUU.tnEtMe827oywEa8TgLqg {
+  background: rgba(var(--spice-rgb-sidebar), .9) !important;
+  box-shadow: 0 1px 0 rgba(var(--spice-rgb-text), .08);
+}
+@media (max-width: 1100px) {
+  #main-view [data-testid="artist-page"] .C0YTSqDKL6_Qo68om_i1 {
+    padding: 16px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
 .main-trackList-trackListRow:hover { background-color: var(--spice-highlight); }
 .main-playPauseButton-button,
 [data-testid="control-button-playpause"] { background-color: var(--spice-button); }
